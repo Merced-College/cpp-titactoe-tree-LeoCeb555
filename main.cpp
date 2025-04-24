@@ -50,6 +50,7 @@ public:
         return EMPTY;
     }
 
+    //iterates through board vector, adds empty indexes to moves vector, returns moves
     vector<int> getAvailableMoves() const {
         vector<int> moves;
         for (int i = 0; i < 9; ++i)
@@ -58,9 +59,9 @@ public:
     }
 
     GameState makeMove(int index, char player) const {
-        vector<char> newBoard = board;
-        newBoard[index] = player;
-        return GameState(newBoard);
+        vector<char> newBoard = board; //sets newBoard to current game board
+        newBoard[index] = player; //sets character at index value to 'X' or 'O' depending on player
+        return GameState(newBoard); //returns updated game board
     }
 
     const vector<char>& getBoard() const {
@@ -70,44 +71,44 @@ public:
 
 class TicTacToeTree {
 public:
-    int minimax(const GameState& state, bool isMaximizing) {
-        char winner = state.checkWinner();
+    int minimax(const GameState& state, bool isMaximizing) { //Boolean is used to check if computer or human makes move
+        char winner = state.checkWinner(); //First, checks if game is over using char winner
         if (winner == COMPUTER) return 1;
         if (winner == HUMAN) return -1;
         if (state.isFull()) return 0;
 
-        if (isMaximizing) {
-            int bestScore = numeric_limits<int>::min();
-            for (int move : state.getAvailableMoves()) {
-                GameState newState = state.makeMove(move, COMPUTER);
-                int score = minimax(newState, false);
-                bestScore = max(bestScore, score);
+        if (isMaximizing) { //if bool = true, COMPUTER's turn (maximizing score)
+            int bestScore = numeric_limits<int>::min(); //setting bestScore to lowest possible int value
+            for (int move : state.getAvailableMoves()) { //loops through moves vector (contains empty indexes)
+                GameState newState = state.makeMove(move, COMPUTER); //creates a new game state with COMPUTER move added
+                int score = minimax(newState, false); //calls minimax function again (but switches to HUMAN's turn)
+                bestScore = max(bestScore, score); //update bestScore if a higher score is found
             }
-            return bestScore;
-        } else {
-            int bestScore = numeric_limits<int>::max();
+            return bestScore;  //return the best score found for COMPUTER
+        } else { //if bool = false, HUMAN's turn (minimizing score)
+            int bestScore = numeric_limits<int>::max(); //sets bestScore to highest possible int value
             for (int move : state.getAvailableMoves()) {
-                GameState newState = state.makeMove(move, HUMAN);
-                int score = minimax(newState, true);
-                bestScore = min(bestScore, score);
+                GameState newState = state.makeMove(move, HUMAN); //creates a new game state with HUMAN move added
+                int score = minimax(newState, true); //calls minimax function again (but switches to COMPUTER's turn)
+                bestScore = min(bestScore, score); //update bestScore if a lower score is found
             }
-            return bestScore;
+            return bestScore; //return the best score found for HUMAN
         }
     }
 
-    int findBestMove(const GameState& state) {
+    int findBestMove(const GameState& state) { //function predicts best next move based on score
         int bestScore = numeric_limits<int>::min();
         int bestMove = -1;
 
-        for (int move : state.getAvailableMoves()) {
-            GameState newState = state.makeMove(move, COMPUTER);
-            int score = minimax(newState, false);
-            if (score > bestScore) {
-                bestScore = score;
-                bestMove = move;
+        for (int move : state.getAvailableMoves()) { //loops through every empty index (every available move)
+            GameState newState = state.makeMove(move, COMPUTER); //makes a new game state for current COMPUTER move
+            int score = minimax(newState, false); //calculates overall game score if current move is made
+            if (score > bestScore) { //if move results in higher overall score (for COMPUTER) than current best
+                bestScore = score; //sets current best to current score (basically updates best move's value)
+                bestMove = move; //sets current best move to current index value (updates computer's next move)
             }
         }
-        return bestMove;
+        return bestMove; //returns the move with the highest overall score for COMPUTER
     }
 };
 
