@@ -1,0 +1,14 @@
+I learned that trees are a great way to visualize recursion and understand potential outcomes for each recursion. 
+In this case, it was a really awesome to to see how our computer ai calculated the best moves possible by 
+simulating the outcome of each one. As a programmer, it would be very hard to visualize this without trees.
+
+The AI was very smart (at least before depth limits were implemented) because it assumed the player was making 
+the best possible move every time. If it had any limits, I'd assume it have to be with arbitrary moves and not 
+being able to take into account human randomness (since we're not computers and are prone to mistakes). 
+Even so, I think that just makes it easier for the computer to win.
+
+If I had more time, I'd make it so the computer knew common Tic Tac Toe strategies that it currently can't predict. 
+These are sneaky strategies that rely more on catching the opponent off guard rather than making perfect logical sense. 
+I think if the computer knew about these strategies before-hand and is able to catch them early on, it'd be 
+virtually unbeatable unless more abstract strategies were used. However, there are only so many strategies that can 
+be used on a 3x3 board, so it might be possible.
