@@ -11,7 +11,6 @@ const char EMPTY = ' '; //represents avaiable move/empty cell
 class GameState {
 private:
     vector<char> board; // 9 cells for Tic-Tac-Toe
-
 public:
     GameState() : board(9, EMPTY) {} //default board
 
@@ -70,29 +69,43 @@ public:
 };
 
 class TicTacToeTree {
+private:
+    int difficultyLevel = 9; //used to track depthLimit; default is 9
 public:
-    int minimax(const GameState& state, bool isMaximizing) { //Boolean is used to check if computer or human makes move
+    const int getDifficultyLevel(){ //accessor for depthLimit
+        return difficultyLevel;
+    }
+    void setDifficultyLevel(const int difficulty){ //mutator for depthLimit
+        difficultyLevel = difficulty;
+    }
+    //ADDED: DEPTH LIMIT (makes AI faster, but less effective)
+    int minimax(const GameState& state, bool isMaximizing, int depthLimit) { //Boolean is used to check if computer or human makes move
         char winner = state.checkWinner(); //First, checks if game is over using char winner
         if (winner == COMPUTER) return 1;
         if (winner == HUMAN) return -1;
         if (state.isFull()) return 0;
-
-        if (isMaximizing) { //if bool = true, COMPUTER's turn (maximizing score)
-            int bestScore = numeric_limits<int>::min(); //setting bestScore to lowest possible int value
-            for (int move : state.getAvailableMoves()) { //loops through moves vector (contains all available moves)
-                GameState newState = state.makeMove(move, COMPUTER); //creates a seperate game state for each COMPUTER move
-                int score = minimax(newState, false); //recursively simulates through each game state (assumes HUMAN picks best options)
-                bestScore = max(bestScore, score); //if a certain move results in a higher score (better for COMPUTER), updates bestScore
+        
+        if (depthLimit != 0){ //Continues minimax function while depthLimit is not reached
+            if (isMaximizing) { //if bool = true, COMPUTER's turn (maximizing score)
+                int bestScore = numeric_limits<int>::min(); //setting bestScore to lowest possible int value
+                for (int move : state.getAvailableMoves()) { //loops through moves vector (contains all available moves)
+                    GameState newState = state.makeMove(move, COMPUTER); //creates a seperate game state for each COMPUTER move
+                    int score = minimax(newState, false, depthLimit - 1); //recursively simulates through each game state (assumes HUMAN picks best options)
+                    bestScore = max(bestScore, score); //if a certain move results in a higher score (better for COMPUTER), updates bestScore
+                }
+                return bestScore;  //return the highest possible score found
+            } else { //if bool = false, HUMAN's turn (minimizing score)
+                int bestScore = numeric_limits<int>::max(); //sets bestScore to highest possible int value
+                for (int move : state.getAvailableMoves()) { //loops through moves vector (contains all available moves)
+                    GameState newState = state.makeMove(move, HUMAN); //creates a seperate game state for each HUMAN move
+                    int score = minimax(newState, true, depthLimit - 1); //rescursively simulates through each game state (assums COMPUTER picks best options)
+                    bestScore = min(bestScore, score); //if a certain move results in a lower score (better for HUMAN), updates bestScore
+                }
+                return bestScore; //return the lowest possible score found
             }
-            return bestScore;  //return the highest possible score found
-        } else { //if bool = false, HUMAN's turn (minimizing score)
-            int bestScore = numeric_limits<int>::max(); //sets bestScore to highest possible int value
-            for (int move : state.getAvailableMoves()) { //loops through moves vector (contains all available moves)
-                GameState newState = state.makeMove(move, HUMAN); //creates a seperate game state for each HUMAN move
-                int score = minimax(newState, true); //rescursively simulates through each game state (assums COMPUTER picks best options)
-                bestScore = min(bestScore, score); //if a certain move results in a lower score (better for HUMAN), updates bestScore
-            }
-            return bestScore; //return the lowest possible score found
+        }
+        else{
+            return 0; //return 0 when done
         }
     }
 
@@ -102,7 +115,7 @@ public:
 
         for (int move : state.getAvailableMoves()) { //loops through every empty index (every available move)
             GameState newState = state.makeMove(move, COMPUTER); //makes a new game state for current COMPUTER move
-            int score = minimax(newState, false); //calculates final game score if current move is made
+            int score = minimax(newState, false, difficultyLevel); //calculates final game score if current move is made
             if (score > bestScore) { //if move results in higher overall score (for COMPUTER) than current best
                 bestScore = score; //sets current best to current score (basically updates best move's value)
                 bestMove = move; //sets current best move to current index value (updates computer's next move)
@@ -122,6 +135,11 @@ void playGame() {
     GameState state; //creates an intial board
     TicTacToeTree ai; //creates COMPUTER player with intergrated logic
     char currentPlayer = HUMAN; //creates HUMAN player
+    int difficulty; //used to set AI depthLimit
+
+    cout << "What difficulty would you like to play on? (affects depthLimit)\nPlease enter (1-9): "; //prompt for depthLimit
+    cin >> difficulty;
+    ai.setDifficultyLevel(difficulty); //changes depthLimit to user's difficulty choice
 
     while (!state.isGameOver()) { //continues looping while game isn't finished
         state.printBoard(); //outputs board to screen
