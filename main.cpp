@@ -105,10 +105,10 @@ public:
             }
         }
         else{
-            return 0; //return 0 when done
+            return 0; //base case
         }
     }
-
+    
     int findBestMove(const GameState& state) { //function predicts best next move based current board state (only for COMPUTER)
         int bestScore = numeric_limits<int>::min();
         int bestMove = -1;
@@ -116,6 +116,7 @@ public:
         for (int move : state.getAvailableMoves()) { //loops through every empty index (every available move)
             GameState newState = state.makeMove(move, COMPUTER); //makes a new game state for current COMPUTER move
             int score = minimax(newState, false, difficultyLevel); //calculates final game score if current move is made
+            cout << "Current move: " << move << endl << "Overall score move: " << score << endl << endl; //ADDED: DECISION TRACKER (tracks current move and score)
             if (score > bestScore) { //if move results in higher overall score (for COMPUTER) than current best
                 bestScore = score; //sets current best to current score (basically updates best move's value)
                 bestMove = move; //sets current best move to current index value (updates computer's next move)
