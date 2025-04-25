@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <limits>
+#include <random>
 using namespace std;
 
 const char HUMAN = 'X'; //represents HUMAN move
@@ -105,6 +106,12 @@ public:
             if (score > bestScore) { //if move results in higher overall score (for COMPUTER) than current best
                 bestScore = score; //sets current best to current score (basically updates best move's value)
                 bestMove = move; //sets current best move to current index value (updates computer's next move)
+            }
+            else if (score == bestScore){ //ADDED: RANDOMNESS (randomly choose between two equal moves)
+                if (rand() % 2 == 0){ //50 50 chance
+                    bestScore = score;
+                    bestMove = move;
+                }
             }
         }
         return bestMove; //returns the move with the highest overall score for COMPUTER
